@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pay with Razorpay</title>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</head>
+<body>
+  <h2>Pay ₹100 via Google Pay / UPI</h2>
+  <button onclick="startPayment()">Pay Now</button>
+
+  <script>
+    async function startPayment() {
+      const res = await fetch('/create-order', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ amount: 1 })
+      });
+
+      const order = await res.json();
+
+      var options = {
+        "key": "{{ key_id }}",
+        "amount": order.amount,
+        "currency": "INR",
+        "name": "Rejina",
+        "description": "Test Payment",
+        "order_id": order.id,
+        "handler": function (response){
+            alert("Payment successful: " + response.razorpay_payment_id);
+            window.location.href = "/thank-you";
+        },
+        "theme": {
+            "color": "#528FF0"
+        }
+      };
+      var rzp = new Razorpay(options);
+      rzp.open();
+    }
+  </script>
+</body>
+</html>
